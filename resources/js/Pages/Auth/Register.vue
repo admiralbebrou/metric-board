@@ -15,12 +15,12 @@ function register()
 
 <template>
     <div class="max-w-md mx-auto mt-12">
-        <h1 class="text-2xl font-bold mb-6">Регистрация</h1>
+        <h1 class="text-2xl font-bold mb-6">Account registration</h1>
         <form @submit.prevent="register">
 
             <!-- Name -->
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Имя</label>
+                <label class="block text-sm font-medium text-gray-700">Name</label>
                 <input
                     v-model="form.name"
                     type="text"
@@ -42,7 +42,7 @@ function register()
 
             <!-- Password -->
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Пароль</label>
+                <label class="block text-sm font-medium text-gray-700">Password</label>
                 <input
                     v-model="form.password"
                     type="password"
@@ -53,7 +53,7 @@ function register()
 
             <!-- Confirm Password -->
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700">Подтверждение пароля</label>
+                <label class="block text-sm font-medium text-gray-700">Confirm password</label>
                 <input
                     v-model="form.password_confirmation"
                     type="password"
@@ -66,7 +66,7 @@ function register()
                 class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
                 :disabled="form.processing"
             >
-                Зарегистрироваться
+                Registration
             </button>
         </form>
     </div>
