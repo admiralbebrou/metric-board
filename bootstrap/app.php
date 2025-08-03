@@ -16,10 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
 
         $middleware->api(prepend: [
-           EnsureFrontendRequestsAreStateful::class,
+            EnsureFrontendRequestsAreStateful::class,
         ]);
 
-        $middleware->web(HandleInertiaRequests::class);
+        $middleware->redirectGuestsTo(fn () => route('register'));
+        $middleware->web(\App\Http\Middleware\HandleInertiaRequests::class);
+
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
