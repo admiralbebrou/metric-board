@@ -3,9 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -14,21 +21,41 @@ class LoginController extends Controller
         return Inertia::render('Auth/Login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        $user = User::where('email', $credentials['email'])->first();
 
-            return redirect()->intended('/dashboard');
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Неверный email или пароль'
+            ], 401);
         }
 
-        return back()->withErrors([
-            'email' => 'Неверные учетные данные.',
+        $token = $user->createToken('auth_token', ['*'], Carbon::now()->addMinutes(120))->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'user' => $user,
+        ]);
+    }
+    public function logout(Request $request): JsonResponse
+    {
+        $bearer = $request->bearerToken();
+
+        if ($bearer) {
+            $token = PersonalAccessToken::findToken($bearer);
+            if ($token) {
+                $token->delete(); // удаляем из базы
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully'
         ]);
     }
 }

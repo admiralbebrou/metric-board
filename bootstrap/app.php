@@ -15,11 +15,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
+        $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->api(prepend: [
-            EnsureFrontendRequestsAreStateful::class,
+            EnsureFrontendRequestsAreStateful::class
         ]);
 
-        $middleware->redirectGuestsTo(fn () => route('register'));
+        $middleware->validateCsrfTokens(except: [
+            'login',
+            'register',
+            '/api/*'
+        ]);
+
         $middleware->web(\App\Http\Middleware\HandleInertiaRequests::class);
 
 

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,13 +19,20 @@ class RegisterController extends Controller
         return Inertia::render('Auth/Register');
     }
 
-    public function store(Request $request)
+    public function store(RegisterRequest $request): JsonResponse
     {
-        Log::info($request);
-        $user = User::query()->create($request->only('name', 'email', 'password'));
+        $validated = $request->validated();
+
+        $user = User::query()->create($validated);
+
+        $token = $user->createToken('auth_token', ['*'], Carbon::now()->addMinutes(120))->plainTextToken;
+
         Auth::login($user);
-        $request->session()->regenerate();
-        return redirect()->route('dashBoard');
+
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'user' => $user,
+        ]);
     }
 }
-

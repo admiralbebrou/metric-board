@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/inertia-vue3'
+import axiosClient from '../../axios.js'
+import { Inertia } from "@inertiajs/inertia"
+
 
 const form = useForm({
     email: '',
@@ -8,8 +11,14 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post('/login')
+    console.log(form)
+    axiosClient.post("/login", form)
+        .then(response => {
+            localStorage.setItem("token", response.data.token)
+            Inertia.visit('/')
+        })
 }
+
 </script>
 
 <template>

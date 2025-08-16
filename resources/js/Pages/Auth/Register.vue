@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/inertia-vue3'
+import axiosClient from '../../axios.js'
+import {Inertia} from "@inertiajs/inertia";
 const form = useForm({
     name: '',
     email: '',
@@ -7,16 +9,20 @@ const form = useForm({
     password_confirmation: ''
     })
 
-function register()
-    {
-        form.post('/register')
-    }
+const submit = () => {
+    console.log(form)
+    axiosClient.post("/register", form)
+        .then(response => {
+            localStorage.setItem("token", response.data.token)
+            Inertia.visit('/')
+        })
+}
 </script>
 
 <template>
     <div class="max-w-md mx-auto mt-12">
         <h1 class="text-2xl font-bold mb-6">Account registration</h1>
-        <form @submit.prevent="register">
+        <form @submit.prevent="submit">
 
             <!-- Name -->
             <div class="mb-4">
