@@ -1,45 +1,36 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/inertia-vue3'
-import axiosClient from '../../axios.js'
 import { Inertia } from "@inertiajs/inertia"
 
 const form = useForm({
-    email: '',
-    password: '',
+    name: ''
 })
 
 const submit = () => {
-    axiosClient.post("/login", form)
-        .then(response => {
-            localStorage.setItem("token", response.data.token)
-            Inertia.visit('/')
-        })
+    form.post('/projects', {
+        onSuccess: () => {
+            Inertia.visit('/') // можно перенаправлять на главную или список проектов
+        }
+    })
 }
 </script>
 
 <template>
     <div class="page">
-        <h1>Login to Your Account</h1>
+        <h1>Create Project</h1>
         <div class="card">
             <form @submit.prevent="submit">
                 <div class="field">
-                    <label>Email</label>
-                    <input v-model="form.email" type="email" placeholder="YourEmail@gmail.com"/>
-                    <div v-if="form.errors.email" class="error">{{ form.errors.email }}</div>
+                    <label>Project Name</label>
+                    <input v-model="form.name" type="text" placeholder="My Awesome Project"/>
+                    <div v-if="form.errors.name" class="error">{{ form.errors.name }}</div>
                 </div>
 
-                <div class="field">
-                    <label>Password</label>
-                    <input v-model="form.password" type="password" placeholder="Enter your password"/>
-                    <div v-if="form.errors.password" class="error">{{ form.errors.password }}</div>
-                </div>
-
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn">Save</button>
             </form>
 
             <p class="note">
-                Don't have an account?
-                <a href="/register">Register</a>
+                <a href="/" class="back-link">← Back to Dashboard</a>
             </p>
         </div>
     </div>
@@ -113,11 +104,11 @@ input:focus {
     text-align: center;
     color: #9ca3af;
 }
-.note a {
+.back-link {
     color: #60a5fa;
     text-decoration: none;
 }
-.note a:hover {
+.back-link:hover {
     text-decoration: underline;
 }
 </style>
